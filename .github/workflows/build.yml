@@ -12,37 +12,43 @@ on:
      - 'full'
      - 'thin'
      - 'none'
-     
+
     KSU:
      description: 'KSU'
-     required: true
+     required: false
+     default: false
+     type: boolean
+
+    KSUNEXT:
+     description: 'KSU-Next (WIP)'
+     required: false
      default: true
      type: boolean
-     
+
     SUSFS4KSU:
      description: 'SUSFS4KSU'
-     required: true
+     required: false
      default: true
      type: boolean
-     
+
     NOTE:
      description: 'Release Note'
      required: false
-     
+
 jobs:
   build:
-    name: Build GKI Kernel 
+    name: Build GKI Kernel
     runs-on: ubuntu-22.04
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-        
+
     - name: Swap Space
       uses: pierotofy/set-swap-space@master
       with:
         swap-size-gb: 12
-        
+
     - name: Free up storage
       uses: rokibhasansagar/slimhub_actions@main
 
@@ -59,6 +65,10 @@ jobs:
 
        if [ "${{ inputs.KSU }}" == "true" ]; then
             export USE_KSU="yes"
+       fi
+
+       if [ "${{ inputs.KSUNEXT }}" == "true" ]; then
+            export USE_KSU_NEXT="yes"
        fi
 
        if [ -n "${{ inputs.NOTE }}" ]; then
