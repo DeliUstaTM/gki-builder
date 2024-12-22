@@ -31,7 +31,7 @@ CUSTOM_MANIFEST_REPO="https://github.com/ambatubash69/gki_manifest"
 CUSTOM_MANIFEST_BRANCH="$GKI_VERSION"
 ANYKERNEL_REPO="https://github.com/ambatubash69/Anykernel3"
 ANYKERNEL_BRANCH="gki"
-ZIP_NAME="ambatubash69-KVER-OPTIONE-$RANDOM_HASH.zip"
+ZIP_NAME="android12-5.10-gki-KVER-OPTIONE-$RANDOM_HASH.zip"
 AOSP_CLANG_VERSION="r547379"
 KERNEL_IMAGE="$WORK_DIR/out/${GKI_VERSION}/dist/Image"
 
