@@ -41,6 +41,8 @@ KERNEL_IMAGE="$WORK_DIR/out/${GKI_VERSION}/dist/Image"
 # if ksu = yes
 if [ "${USE_KSU}" == "yes" ]; then
     ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/OPTIONE/KSU/g')
+elif [ "${USE_KSU_NEXT_CI}" == "yes" ]; then
+    ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/OPTIONE/KSU_NEXT_CI/g')
 elif [ "${USE_KSU_NEXT}" == "yes" ]; then
     # if ksu-next = yes
     ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/OPTIONE/KSU_NEXT/g')
@@ -100,6 +102,11 @@ if [ "${USE_KSU_NEXT}" == "yes" ]; then
         # Enable SUS🤨FS by default
         KSU_NEXT_BRANCH=susfs-$(echo "$GKI_VERSION" | sed 's/ndroid//g')
         curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/${KSU_NEXT_BRANCH}/kernel/setup.sh" | bash -
+        cd "$WORK_DIR/KernelSU-Next"
+        KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
+        cd "$WORK_DIR"
+elif [ "${USE_KSU_NEXT_CI}" == "yes" ]; then
+        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/next/kernel/setup.sh" | bash -
         cd "$WORK_DIR/KernelSU-Next"
         KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
         cd "$WORK_DIR"
