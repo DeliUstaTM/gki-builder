@@ -22,7 +22,14 @@ on:
     KSUNEXT:
      description: 'KSU-Next (WIP)'
      required: false
-     default: true
+     default: false
+     type: boolean
+
+     
+    KSUNEXTCI:
+     description: 'KSU-Next-Ci'
+     required: false
+     default: false
      type: boolean
 
     SUSFS4KSU:
@@ -69,6 +76,10 @@ jobs:
 
        if [ "${{ inputs.KSUNEXT }}" == "true" ]; then
             export USE_KSU_NEXT="yes"
+       fi
+
+       if [ "${{ inputs.KSUNEXTCI }}" == "true" ]; then
+            export USE_KSU_NEXT_CI="yes"
        fi
 
        if [ -n "${{ inputs.NOTE }}" ]; then
