@@ -95,12 +95,14 @@ rm -f $WORK_DIR/clang.tar.gz
 
 COMPILER_STRING=$("$WORK_DIR/prebuilts-master/clang/host/linux-x86/clang-${AOSP_CLANG_VERSION}/bin/clang" -v 2>&1 | head -n 1 | sed 's/(https..*//' | sed 's/ version//')
 
-## KernelSU-Next setup
+## KSU
 if [ "${USE_KSU_NEXT}" == "yes" ]; then
-    curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/next/kernel/setup.sh" | bash -
-    cd "$WORK_DIR/KernelSU-Next"
-    KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
-    cd "$WORK_DIR"
+        # Enable SUS🤨FS by default
+        KSU_NEXT_BRANCH=susfs-$(echo "$GKI_VERSION" | sed 's/ndroid//g')
+        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/${KSU_NEXT_BRANCH}/kernel/setup.sh" | bash -
+        cd "$WORK_DIR/KernelSU-Next"
+        KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
+        cd "$WORK_DIR"
 elif [ "${USE_KSU}" == "yes" ]; then
     curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/refs/heads/main/kernel/setup.sh" | bash -
     cd "$WORK_DIR/KernelSU"
@@ -119,14 +121,11 @@ git config --global user.email "eraselk@proton.me"
 git config --global user.name "eraselk"
 
 ## SUSFS4KSU
-if [ "${USE_KSU}" == "yes" ] || [ "${USE_KSU_NEXT}" == "yes" ] && [ "${USE_KSU_SUSFS}" == "yes" ]; then
-    [ "$USE_KSU" == "yes" ] && TARGET="KernelSU"
-    [ "$USE_KSU_NEXT" == "yes" ] && TARGET="KernelSU-Next"
+if [ "${USE_KSU}" == "yes" ] && [ "${USE_KSU_SUSFS}" == "yes" ]; then
     git clone --depth=1 "https://gitlab.com/simonpunk/susfs4ksu" -b "gki-${GKI_VERSION}"
     SUSFS_PATCHES="$WORK_DIR/susfs4ksu/kernel_patches"
     SUSFS_MODULE="$WORK_DIR/susfs4ksu/ksu_module_susfs"
-    [ "$TARGET" == "KernelSU" ] && ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU/KSUxSUSFS/g')
-    [ "$TARGET" == "KernelSU-Next" ] && ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU_NEXT/KSU_NEXTxSUSFS/g')
+    ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU/KSUxSUSFS/g')
     cd "$WORK_DIR/susfs4ksu"
     LAST_COMMIT_SUSFS=$(git log --format="%s" -n 1)
 
@@ -136,7 +135,7 @@ if [ "${USE_KSU}" == "yes" ] || [ "${USE_KSU_NEXT}" == "yes" ] && [ "${USE_KSU_S
     cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
     cp "$SUSFS_PATCHES/fs/sus_su.c" ./fs/
     cp "$SUSFS_PATCHES/include/linux/sus_su.h" ./include/linux/
-    cd "$WORK_DIR/$TARGET"
+    cd "$WORK_DIR/KernelSU"
     cp "$SUSFS_PATCHES/KernelSU/10_enable_susfs_for_ksu.patch" .
     patch -p1 <10_enable_susfs_for_ksu.patch || exit 1
     cd "$WORK_DIR/common"
