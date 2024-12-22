@@ -31,7 +31,7 @@ CUSTOM_MANIFEST_REPO="https://github.com/ambatubash69/gki_manifest"
 CUSTOM_MANIFEST_BRANCH="$GKI_VERSION"
 ANYKERNEL_REPO="https://github.com/ambatubash69/Anykernel3"
 ANYKERNEL_BRANCH="gki"
-ZIP_NAME="android12-5.10-gki-KVER-OPTIONE-$RANDOM_HASH.zip"
+ZIP_NAME="ambatubash69-KVER-OPTIONE-$RANDOM_HASH.zip"
 AOSP_CLANG_VERSION="r547379"
 KERNEL_IMAGE="$WORK_DIR/out/${GKI_VERSION}/dist/Image"
 
@@ -41,6 +41,9 @@ KERNEL_IMAGE="$WORK_DIR/out/${GKI_VERSION}/dist/Image"
 # if ksu = yes
 if [ "${USE_KSU}" == "yes" ]; then
     ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/OPTIONE/KSU/g')
+elif [ "${USE_KSU_NEXT}" == "yes" ]; then
+    # if ksu-next = yes
+    ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/OPTIONE/KSU_NEXT/g')
 else
     # if ksu = no
     ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/OPTIONE-//g')
@@ -92,12 +95,23 @@ rm -f $WORK_DIR/clang.tar.gz
 
 COMPILER_STRING=$("$WORK_DIR/prebuilts-master/clang/host/linux-x86/clang-${AOSP_CLANG_VERSION}/bin/clang" -v 2>&1 | head -n 1 | sed 's/(https..*//' | sed 's/ version//')
 
-## KernelSU setup
-if [ "${USE_KSU}" == "yes" ]; then
-    curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/main/kernel/setup.sh" | bash -
+## KernelSU-Next setup
+if [ "${USE_KSU_NEXT}" == "yes" ]; then
+    curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/next/kernel/setup.sh" | bash -
+    cd "$WORK_DIR/KernelSU-Next"
+    KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
+    cd "$WORK_DIR"
+elif [ "${USE_KSU}" == "yes" ]; then
+    curl -LSs "https://raw.githubusercontent.com/tiann/KernelSU/refs/heads/main/kernel/setup.sh" | bash -
     cd "$WORK_DIR/KernelSU"
     KSU_VERSION=$(git describe --abbrev=0 --tags)
     cd "$WORK_DIR"
+elif [ "${USE_KSU_NEXT}" == "yes" ] && [ "${USE_KSU}" == "yes" ]; then
+    echo
+    echo "KSU-Next: true"
+    echo "KSU: true"
+    echo "You are stupid!"
+    exit 1
 fi
 
 ## Apply kernel patches
@@ -105,11 +119,14 @@ git config --global user.email "eraselk@proton.me"
 git config --global user.name "eraselk"
 
 ## SUSFS4KSU
-if [ "${USE_KSU}" == "yes" ] && [ "${USE_KSU_SUSFS}" == "yes" ]; then
+if [ "${USE_KSU}" == "yes" ] || [ "${USE_KSU_NEXT}" == "yes" ] && [ "${USE_KSU_SUSFS}" == "yes" ]; then
+    [ "$USE_KSU" == "yes" ] && TARGET="KernelSU"
+    [ "$USE_KSU_NEXT" == "yes" ] && TARGET="KernelSU-Next"
     git clone --depth=1 "https://gitlab.com/simonpunk/susfs4ksu" -b "gki-${GKI_VERSION}"
     SUSFS_PATCHES="$WORK_DIR/susfs4ksu/kernel_patches"
     SUSFS_MODULE="$WORK_DIR/susfs4ksu/ksu_module_susfs"
-    ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU/KSUxSUSFS/g')
+    [ "$TARGET" == "KernelSU" ] && ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU/KSUxSUSFS/g')
+    [ "$TARGET" == "KernelSU-Next" ] && ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU_NEXT/KSU_NEXTxSUSFS/g')
     cd "$WORK_DIR/susfs4ksu"
     LAST_COMMIT_SUSFS=$(git log --format="%s" -n 1)
 
@@ -119,7 +136,7 @@ if [ "${USE_KSU}" == "yes" ] && [ "${USE_KSU_SUSFS}" == "yes" ]; then
     cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
     cp "$SUSFS_PATCHES/fs/sus_su.c" ./fs/
     cp "$SUSFS_PATCHES/include/linux/sus_su.h" ./include/linux/
-    cd "$WORK_DIR/KernelSU"
+    cd "$WORK_DIR/$TARGET"
     cp "$SUSFS_PATCHES/KernelSU/10_enable_susfs_for_ksu.patch" .
     patch -p1 <10_enable_susfs_for_ksu.patch || exit 1
     cd "$WORK_DIR/common"
@@ -140,6 +157,8 @@ text=$(cat <<EOF
 *Kernel Version*: \`${KERNEL_VERSION}\`
 *KSU*: \`$([ "$USE_KSU" == "yes" ] && echo "true" || echo "false")\`
 *KSU Version*: \`$([ "$USE_KSU" == "yes" ] && echo "$KSU_VERSION" || echo "null")\`
+*KSU-Next*: \`$([ "$USE_KSU_NEXT" == "yes" ] && echo "true" || echo "false")\`
+*KSU-Next Version*: \`$([ "$USE_KSU_NEXT" == "yes" ] && echo "$KSU_NEXT_VERSION" || echo "null")\`
 *SUSFS*: \`$([ "${USE_KSU_SUSFS}" == "yes" ] && echo "true" || echo "false")\`
 *SUSFS Version*: \`$([ "${USE_KSU_SUSFS}" == "yes" ] && echo "$SUSFS_VERSION" || echo "null")\`
 *LTO Mode*: \`${LTO_TYPE}\`
