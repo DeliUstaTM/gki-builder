@@ -94,7 +94,7 @@ COMPILER_STRING=$("$WORK_DIR/prebuilts-master/clang/host/linux-x86/clang-${AOSP_
 
 ## KernelSU setup
 if [ "${USE_KSU}" == "yes" ]; then
-    curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/main/kernel/setup.sh" | bash - next
+    curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash - 
     cd "$WORK_DIR/KernelSU"
     KSU_VERSION=$(git describe --abbrev=0 --tags)
     cd "$WORK_DIR"
