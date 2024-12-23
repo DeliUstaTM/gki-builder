@@ -92,7 +92,7 @@ ZIP_NAME=$(echo "$ZIP_NAME" | sed "s/KVER/$KERNEL_VERSION/g")
 wget https://apt.llvm.org/llvm.sh
 chmod +x llvm.sh
 sudo ./llvm.sh 20 all
-sudo apt install -y clang llvm lld
+sudo apt install -y clang 
 ## KSU
 if [ "${USE_KSU_NEXT}" == "yes" ]; then
         # Enable SUS🤨FS by default
