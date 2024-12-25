@@ -70,20 +70,13 @@ jobs:
             export USE_KSU="yes"
        fi
 
-<<<<<<< HEAD
        if [ "${{ inputs.KSUNEXT }}" == "true" ]; then
             export USE_KSU_NEXT="yes"
        fi
 
-       if [ -n "${{ inputs.NOTE }}" ]; then
-            export NOTE="${{ inputs.NOTE }}"
-       fi
-
-=======
        export STATUS="${{ inputs.STATUS }}"
        export LTO_TYPE="${{ inputs.LTO }}"
-       
->>>>>>> 22809a30708bd3fafb3af8462085262144382cf1
        export chat_id="${{ secrets.CHAT_ID }}"
        export token="${{ secrets.TOKEN }}"
+
        ./build.sh
