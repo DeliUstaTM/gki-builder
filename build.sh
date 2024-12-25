@@ -106,7 +106,7 @@ if [ "${USE_KSU_NEXT}" == "yes" ]; then
         KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
         cd "$WORK_DIR"
 elif [ "${USE_KSU_NEXT_CI}" == "yes" ]; then
-        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/next/kernel/setup.sh" | bash - next-susfs-a12-5.10
+        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -s next-susfs-a12-5.10
         cd "$WORK_DIR/KernelSU-Next"
         KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
         cd "$WORK_DIR"
