@@ -37,7 +37,7 @@ on:
     SUSFS4KSU:
      description: 'SUSFS4KSU'
      required: false
-     default: false
+     default: true
      type: boolean
 
 jobs:
