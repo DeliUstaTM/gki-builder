@@ -106,7 +106,7 @@ if [ "${USE_KSU_NEXT}" == "yes" ]; then
         KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
         cd "$WORK_DIR"
 elif [ "${USE_KSU_NEXT_CI}" == "yes" ]; then
-        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/next/kernel/setup.sh" | bash -
+        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/next/kernel/setup.sh" | bash - next-susfs-a12-5.10
         cd "$WORK_DIR/KernelSU-Next"
         KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
         cd "$WORK_DIR"
@@ -164,6 +164,8 @@ text=$(cat <<EOF
 *KSU*: \`$([ "$USE_KSU" == "yes" ] && echo "true" || echo "false")\`
 *KSU Version*: \`$([ "$USE_KSU" == "yes" ] && echo "$KSU_VERSION" || echo "null")\`
 *KSU-Next*: \`$([ "$USE_KSU_NEXT" == "yes" ] && echo "true" || echo "false")\`
+*KSU-Next Version*: \`$([ "$USE_KSU_NEXT" == "yes" ] && echo "$KSU_NEXT_VERSION" || echo "null")\`
+*KSU-Next-CI*: \`$([ "$USE_KSU_NEXT_CI" == "yes" ] && echo "true" || echo "false")\`
 *KSU-Next Version*: \`$([ "$USE_KSU_NEXT" == "yes" ] && echo "$KSU_NEXT_VERSION" || echo "null")\`
 *SUSFS*: \`$([ "${USE_KSU_SUSFS}" == "yes" ] && echo "true" || echo "false")\`
 *SUSFS Version*: \`$([ "${USE_KSU_SUSFS}" == "yes" ] && echo "$SUSFS_VERSION" || echo "null")\`
