@@ -57,7 +57,7 @@ sudo apt upgrade -y
 sudo apt install -y automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 rename libelf-dev dwarves rsync
 
 ## Install Google's repo
-curl -o repo https://storage.googleapis.com/git-repo-downloads/repo
+curl -so repo https://storage.googleapis.com/git-repo-downloads/repo
 sudo mv repo /usr/bin
 sudo chmod +x /usr/bin/repo
 
@@ -91,7 +91,7 @@ ZIP_NAME=$(echo "$ZIP_NAME" | sed "s/KVER/$KERNEL_VERSION/g")
 ## Download Clang
 rm -rf $WORK_DIR/prebuilts-master
 mkdir -p $WORK_DIR/prebuilts-master/clang/host/linux-x86/clang-$AOSP_CLANG_VERSION
-wget -O $WORK_DIR/clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-$AOSP_CLANG_VERSION.tar.gz
+wget -qO $WORK_DIR/clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-$AOSP_CLANG_VERSION.tar.gz
 tar -xf $WORK_DIR/clang.tar.gz -C $WORK_DIR/prebuilts-master/clang/host/linux-x86/clang-$AOSP_CLANG_VERSION
 rm -f $WORK_DIR/clang.tar.gz
 
