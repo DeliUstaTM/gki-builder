@@ -125,31 +125,28 @@ if [ "${USE_KSU}" == "yes" ] || [ "$USE_KSU_NEXT" == "yes" ] && [ "${USE_KSU_SUS
     git clone --depth=1 "https://gitlab.com/simonpunk/susfs4ksu" -b "gki-${GKI_VERSION}"
     SUSFS_PATCHES="$WORK_DIR/susfs4ksu/kernel_patches"
     
+    cd "$WORK_DIR/common"
     if [ "$USE_KSU" == "yes" ]; then
-        TARGET="KernelSU"
         ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU/KSUxSUSFS/g')
         SUSFS_MODULE="$WORK_DIR/susfs4ksu/ksu_module_susfs"
+        cp "$SUSFS_PATCHES/50_add_susfs_in_gki-${GKI_VERSION}.patch" .
+        cp "$SUSFS_PATCHES/fs/susfs.c" ./fs/
+        cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
+        cp "$SUSFS_PATCHES/fs/sus_su.c" ./fs/
+        cp "$SUSFS_PATCHES/include/linux/sus_su.h" ./include/linux/
+        cd "$WORK_DIR/$TARGET"
+        cp "$SUSFS_PATCHES/KernelSU/10_enable_susfs_for_ksu.patch" .
+        patch -p1 <10_enable_susfs_for_ksu.patch || exit 1
+        cd "$WORK_DIR/common"
+        patch -p1 <50_add_susfs_in_gki-${GKI_VERSION}.patch || exit 1
     elif [ "$USE_KSU_NEXT" == "yes" ]; then
-        TARGET="KernelSU-Next"
+        cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
         ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU_NEXT/KSU_NEXTxSUSFS/g')
     fi
-    
-    cd "$WORK_DIR/susfs4ksu"
-
-    cd "$WORK_DIR/common"
-    cp "$SUSFS_PATCHES/50_add_susfs_in_gki-${GKI_VERSION}.patch" .
-    cp "$SUSFS_PATCHES/fs/susfs.c" ./fs/
-    cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
-    cp "$SUSFS_PATCHES/fs/sus_su.c" ./fs/
-    cp "$SUSFS_PATCHES/include/linux/sus_su.h" ./include/linux/
-    cd "$WORK_DIR/$TARGET"
-    cp "$SUSFS_PATCHES/KernelSU/10_enable_susfs_for_ksu.patch" .
-    patch -p1 <10_enable_susfs_for_ksu.patch || exit 1
-    cd "$WORK_DIR/common"
-    patch -p1 <50_add_susfs_in_gki-${GKI_VERSION}.patch || exit 1
 
     SUSFS_VERSION=$(grep -E '^#define SUSFS_VERSION' ./include/linux/susfs.h | cut -d' ' -f3 | sed 's/"//g')
     
+    cd "$WORK_DIR"
     # 2024/12/25: KSU-Next doesn't need Sus🤨FS module
     if [ "$USE_KSU" = "yes" ]; then
         SUSFS_MODULE_ZIP="ksu_module_susfs_${SUSFS_VERSION}.zip"
