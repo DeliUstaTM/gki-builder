@@ -98,7 +98,7 @@ COMPILER_STRING=$("$WORK_DIR/prebuilts-master/clang/host/linux-x86/clang-${AOSP_
 ## KSU
 if [ "${USE_KSU_NEXT}" == "yes" ]; then
     # Enable SUS🤨FS by default
-    KSU_NEXT_BRANCH=susfs-$(echo "$GKI_VERSION" | sed 's/ndroid//g')
+    KSU_NEXT_BRANCH=next-susfs-$(echo "$GKI_VERSION" | sed 's/ndroid//g')
     curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/${KSU_NEXT_BRANCH}/kernel/setup.sh" | bash -
     cd "$WORK_DIR/KernelSU-Next"
     KSU_NEXT_VERSION=$(git describe --abbrev=0 --tags)
