@@ -150,12 +150,6 @@ if [ "${USE_KSU}" == "yes" ] || [ "$USE_KSU_NEXT" == "yes" ] && [ "${USE_KSU_SUS
     fi
 
     SUSFS_VERSION=$(grep -E '^#define SUSFS_VERSION' ./include/linux/susfs.h | cut -d' ' -f3 | sed 's/"//g')
-    
-    # 2024/12/25: KSU-Next doesn't need Sus🤨FS module
-    if [ "$USE_KSU" = "yes" ]; then
-        SUSFS_MODULE_ZIP="ksu_module_susfs_${SUSFS_VERSION}.zip"
-    fi
-    
 elif [ "${USE_KSU_SUSFS}" == "yes" ] && [ "$USE_KSU" != "yes" ] || [ "$USE_KSU_NEXT" != "yes" ]; then
     echo "[ERROR] You can't use SUSFS without KSU or KSU-Next enabled!"
     exit 1
@@ -164,10 +158,11 @@ fi
 cd "$WORK_DIR"
 
 text=$(cat <<EOF
-*~~~ GKI CI ~~~*
+*~~~ GKI Build Started ~~~*
 *GKI Version*: \`${GKI_VERSION}\`
 *Kernel Version*: \`${KERNEL_VERSION}\`
 *Status*: \`${STATUS}\`
+*Date*: \`$(date)\`
 *KSU*: \`$([ "$USE_KSU" == "yes" ] && echo "true" || echo "false")\`
 *KSU Version*: \`$([ "$USE_KSU" == "yes" ] && echo "$KSU_VERSION" || echo "null")\`
 *KSU-Next*: \`$([ "$USE_KSU_NEXT" == "yes" ] && echo "true" || echo "false")\`
@@ -192,6 +187,7 @@ set -e
 if ! [ -f "$KERNEL_IMAGE" ]; then
     send_msg "❌ GKI Build failed!"
     upload_file "$WORK_DIR/build_log.txt"
+    exit 1
 else
     send_msg "✅ GKI Build succeeded"
 
@@ -216,15 +212,6 @@ else
     mv "$ZIP_NAME" "$WORK_DIR"
     cd "$WORK_DIR"
     upload_file "$WORK_DIR/$ZIP_NAME"
-
-    # 2024/12/25: KSU-Next doesn't need sus🤨fs module
-    if [ "$USE_KSU_SUSFS" == "yes" ] && [ "$USE_KSU" == "yes" ]; then
-        cd "$SUSFS_MODULE"
-        zip -r9 "$SUSFS_MODULE_ZIP" * -x README.md
-        mv "$SUSFS_MODULE_ZIP" "$WORK_DIR"
-        cd "$WORK_DIR"
-        upload_file "$WORK_DIR/$SUSFS_MODULE_ZIP"
-    fi
-
     upload_file "$WORK_DIR/build_log.txt"
+    exit 0
 fi
