@@ -128,19 +128,18 @@ if [ "${USE_KSU}" == "yes" ] || [ "$USE_KSU_NEXT" == "yes" ] && [ "${USE_KSU_SUS
     cd "$WORK_DIR/common"
     if [ "$USE_KSU" == "yes" ]; then
         ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU/KSUxSUSFS/g')
-        SUSFS_MODULE="$WORK_DIR/susfs4ksu/ksu_module_susfs"
         cp "$SUSFS_PATCHES/50_add_susfs_in_gki-${GKI_VERSION}.patch" .
         cp "$SUSFS_PATCHES/fs/susfs.c" ./fs/
         cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
         cp "$SUSFS_PATCHES/fs/sus_su.c" ./fs/
         cp "$SUSFS_PATCHES/include/linux/sus_su.h" ./include/linux/
-        cd "$WORK_DIR/$TARGET"
+        cd "$WORK_DIR/KernelSU"
         cp "$SUSFS_PATCHES/KernelSU/10_enable_susfs_for_ksu.patch" .
         patch -p1 <10_enable_susfs_for_ksu.patch || exit 1
         cd "$WORK_DIR/common"
         patch -p1 <50_add_susfs_in_gki-${GKI_VERSION}.patch || exit 1
     elif [ "$USE_KSU_NEXT" == "yes" ]; then
-        ZIP_NAME=$( "$ZIP_NAME" | sed 's/KSU_NEXT/KSU_NEXTxSUSFS/g')
+        ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU_NEXT/KSU_NEXTxSUSFS/g')
         cp "$SUSFS_PATCHES/50_add_susfs_in_gki-${GKI_VERSION}.patch" .
         cp "$SUSFS_PATCHES/fs/susfs.c" ./fs/
         cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
@@ -150,7 +149,7 @@ if [ "${USE_KSU}" == "yes" ] || [ "$USE_KSU_NEXT" == "yes" ] && [ "${USE_KSU_SUS
     fi
 
     SUSFS_VERSION=$(grep -E '^#define SUSFS_VERSION' ./include/linux/susfs.h | cut -d' ' -f3 | sed 's/"//g')
-elif [ "${USE_KSU_SUSFS}" == "yes" ] && [ "$USE_KSU" != "yes" ] || [ "$USE_KSU_NEXT" != "yes" ]; then
+elif [ "${USE_KSU_SUSFS}" == "yes" ] && [ "$USE_KSU" != "yes" ] && [ "$USE_KSU_NEXT" != "yes" ]; then
     echo "[ERROR] You can't use SUSFS without KSU or KSU-Next enabled!"
     exit 1
 fi
