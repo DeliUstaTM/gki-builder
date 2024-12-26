@@ -140,13 +140,17 @@ if [ "${USE_KSU}" == "yes" ] || [ "$USE_KSU_NEXT" == "yes" ] && [ "${USE_KSU_SUS
         cd "$WORK_DIR/common"
         patch -p1 <50_add_susfs_in_gki-${GKI_VERSION}.patch || exit 1
     elif [ "$USE_KSU_NEXT" == "yes" ]; then
+        ZIP_NAME=$( "$ZIP_NAME" | sed 's/KSU_NEXT/KSU_NEXTxSUSFS/g')
+        cp "$SUSFS_PATCHES/50_add_susfs_in_gki-${GKI_VERSION}.patch" .
+        cp "$SUSFS_PATCHES/fs/susfs.c" ./fs/
         cp "$SUSFS_PATCHES/include/linux/susfs.h" ./include/linux/
-        ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU_NEXT/KSU_NEXTxSUSFS/g')
+        cp "$SUSFS_PATCHES/fs/sus_su.c" ./fs/
+        cp "$SUSFS_PATCHES/include/linux/sus_su.h" ./include/linux/
+        patch -p1 <50_add_susfs_in_gki-${GKI_VERSION}.patch || exit 1
     fi
 
     SUSFS_VERSION=$(grep -E '^#define SUSFS_VERSION' ./include/linux/susfs.h | cut -d' ' -f3 | sed 's/"//g')
     
-    cd "$WORK_DIR"
     # 2024/12/25: KSU-Next doesn't need Sus🤨FS module
     if [ "$USE_KSU" = "yes" ]; then
         SUSFS_MODULE_ZIP="ksu_module_susfs_${SUSFS_VERSION}.zip"
