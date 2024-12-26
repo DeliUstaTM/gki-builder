@@ -75,7 +75,7 @@ sed -i \
     -e "s|^export TZ=.*|export TZ=$GKI_BUILD_TZ|" \
     -e "s|^export KBUILD_BUILD_USER=.*|export KBUILD_BUILD_USER=$GKI_BUILD_USER|" \
     -e "s|^export KBUILD_BUILD_HOST=.*|export KBUILD_BUILD_HOST=$GKI_BUILD_HOST|" \
-    -e "s|^export KBUILD_BUILD_TIMESTAMP=.*|export KBUILD_BUILD_TIMESTAMP=\$(date)|" \
+    -e 's|^export KBUILD_BUILD_TIMESTAMP=.*|export KBUILD_BUILD_TIMESTAMP=$(date)|' \
     build/_setup_env.sh
 
 # Set aosp clang version
@@ -124,7 +124,7 @@ git config --global user.name "Your Name"
 if [ "${USE_KSU}" == "yes" ] || [ "$USE_KSU_NEXT" == "yes" ] && [ "${USE_KSU_SUSFS}" == "yes" ]; then
     git clone --depth=1 "https://gitlab.com/simonpunk/susfs4ksu" -b "gki-${GKI_VERSION}"
     SUSFS_PATCHES="$WORK_DIR/susfs4ksu/kernel_patches"
-    
+
     cd "$WORK_DIR/common"
     if [ "$USE_KSU" == "yes" ]; then
         ZIP_NAME=$(echo "$ZIP_NAME" | sed 's/KSU/KSUxSUSFS/g')
@@ -156,7 +156,8 @@ fi
 
 cd "$WORK_DIR"
 
-text=$(cat <<EOF
+text=$(
+    cat <<EOF
 *~~~ GKI Build Started ~~~*
 *GKI Version*: \`${GKI_VERSION}\`
 *Kernel Version*: \`${KERNEL_VERSION}\`
@@ -178,8 +179,8 @@ send_msg "$text"
 # Build GKI
 set +e
 LTO="$LTO_TYPE" \
-BUILD_CONFIG=common/build.config.gki.aarch64 \
-build/build.sh -j$(( $(nproc --all) - 1 )) 2>&1 | tee "$WORK_DIR/build_log.txt"
+    BUILD_CONFIG=common/build.config.gki.aarch64 \
+    build/build.sh -j$(($(nproc --all) - 1)) 2>&1 | tee "$WORK_DIR/build_log.txt"
 set -e
 
 # Upload to telegram
