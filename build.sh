@@ -162,7 +162,7 @@ text=$(
 *GKI Version*: \`${GKI_VERSION}\`
 *Kernel Version*: \`${KERNEL_VERSION}\`
 *Status*: \`${STATUS}\`
-*Date*: \`$(date)\`
+*Date*: \`$(TZ=$GKI_BUILD_TZ date)\`
 *KSU*: \`$([ "$USE_KSU" == "yes" ] && echo "true" || echo "false")\`
 *KSU Version*: \`$([ "$USE_KSU" == "yes" ] && echo "$KSU_VERSION" || echo "null")\`
 *KSU-Next*: \`$([ "$USE_KSU_NEXT" == "yes" ] && echo "true" || echo "false")\`
