@@ -3,15 +3,6 @@ name: Build GKI
 on:
   workflow_dispatch:
    inputs:
-    LTO:
-     description: 'LTO Type'
-     required: true
-     default: ''
-     type: choice
-     options:
-     - 'full'
-     - 'thin'
-     - 'none'
 
     STATUS:
      description: 'Build Status'
@@ -59,23 +50,22 @@ jobs:
 
     - name: Build
       run: |
-       [ -x "build.sh" ] || chmod a+x build.sh
-       [ -x "telegram_functions.sh" ] || chmod a+x telegram_functions.sh
+       [[ -x "build.sh" ]] || chmod a+x build.sh
+       [[ -x "telegram_functions.sh" ]] || chmod a+x telegram_functions.sh
 
-       if [ "${{ inputs.SUSFS4KSU }}" == "true" ]; then
+       if [[ "${{ inputs.SUSFS4KSU }}" == "true" ]]; then
             export USE_KSU_SUSFS="yes"
        fi
 
-       if [ "${{ inputs.KSU }}" == "true" ]; then
+       if [[ "${{ inputs.KSU }}" == "true" ]]; then
             export USE_KSU="yes"
        fi
 
-       if [ "${{ inputs.KSUNEXT }}" == "true" ]; then
+       if [[ "${{ inputs.KSUNEXT }}" == "true" ]]; then
             export USE_KSU_NEXT="yes"
        fi
 
        export STATUS="${{ inputs.STATUS }}"
-       export LTO_TYPE="${{ inputs.LTO }}"
        export chat_id="${{ secrets.CHAT_ID }}"
        export token="${{ secrets.TOKEN }}"
 
