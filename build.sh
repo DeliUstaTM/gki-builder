@@ -62,7 +62,7 @@ git clone --depth=1 "$ANYKERNEL_REPO" -b "$ANYKERNEL_BRANCH" "$WORK_DIR/anykerne
 
 # Repo sync
 repo init --depth 1 "$CUSTOM_MANIFEST_REPO" -b "$CUSTOM_MANIFEST_BRANCH"
-repo sync -j$(nproc --all) --force-sync
+repo --trace sync -c -j$(nproc --all) --no-tags
 
 ## Extract kernel version
 cd "$WORK_DIR/common"
@@ -94,9 +94,13 @@ COMPILER_STRING=$("$WORK_DIR/prebuilts-master/clang/host/linux-x86/clang-${AOSP_
 
 ## KSU or KSU-Next setup
 if [[ ${USE_KSU_NEXT} == "yes" ]]; then
+
     if [[ $USE_KSU_SUSFS == "yes" ]]; then
         KSU_NEXT_BRANCH=next-susfs-$(echo "$GKI_VERSION" | sed 's/ndroid//g')
+    elif [[ $USE_KSU_SUSFS != "yes" ]]; then
+        KSU_NEXT_BRANCH=next
     fi
+    
     wget -qO setup.sh https://raw.githubusercontent.com/rifsxd/KernelSU-Next/refs/heads/next/kernel/setup.sh
     chmod +x setup.sh
     bash ./setup.sh "$KSU_NEXT_BRANCH"
