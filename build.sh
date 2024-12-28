@@ -50,7 +50,7 @@ fi
 
 ## Install needed packages
 sudo apt update -y
-sudo apt install -y rsync bash git perl rsync sh tar
+sudo apt install -y rsync bash git perl rsync tar
 
 ## Install Google's repo
 curl -so repo https://storage.googleapis.com/git-repo-downloads/repo
