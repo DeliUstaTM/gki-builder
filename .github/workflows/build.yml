@@ -50,6 +50,11 @@ jobs:
         remove-cached-tools: 'true'
         remove-docker-images: 'true'
 
+    - name: Set Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 10
+          
     - name: Build
       run: |
        [[ -x "build.sh" ]] || chmod a+x build.sh
