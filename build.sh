@@ -62,7 +62,7 @@ git clone --depth=1 "$ANYKERNEL_REPO" -b "$ANYKERNEL_BRANCH" "$WORK_DIR/anykerne
 
 # Repo sync
 repo init --depth 1 "$CUSTOM_MANIFEST_REPO" -b "$CUSTOM_MANIFEST_BRANCH"
-repo --trace sync -c -j$(nproc --all) --no-tags
+repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j$(nproc --all)
 
 ## Extract kernel version
 cd "$WORK_DIR/common"
