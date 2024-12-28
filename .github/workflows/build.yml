@@ -49,6 +49,7 @@ jobs:
         remove-codeql: 'true'
         remove-cached-tools: 'true'
         remove-docker-images: 'true'
+        remove-large-packages: 'true'
 
     - name: Set Swap Space
       uses: pierotofy/set-swap-space@master
